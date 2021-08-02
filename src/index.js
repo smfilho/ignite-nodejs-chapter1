@@ -14,9 +14,14 @@ id - uuid
 statement - []
 */
 
-// app.get('/', (request, response) => {
-//   return response.json('Esse é o início, próxima rota está em /courses');
-// });
+app.get('/statement/:ssn', (request, response) => {
+  const { ssn } = request.params
+
+  const customer = customers.find(customer => customer.ssn === ssn)
+
+  return response.json(customer.statement)
+
+});
 
 app.post('/account', (request, response) => {
   const { ssn, name } = request.body;
