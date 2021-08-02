@@ -14,9 +14,6 @@ id - uuid
 statement - []
 */
 
-// askhasdhaslkjdsal
-// aijsoajslkasjflkasjfa
-
 // app.get('/', (request, response) => {
 //   return response.json('Esse é o início, próxima rota está em /courses');
 // });
