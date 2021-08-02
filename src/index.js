@@ -15,6 +15,7 @@ statement - []
 */
 
 // TESTING CHANGES! LETS COMMIT!
+// OK, second test!
 
 // app.get('/', (request, response) => {
 //   return response.json('Esse é o início, próxima rota está em /courses');
