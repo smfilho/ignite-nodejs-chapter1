@@ -14,13 +14,65 @@ id - uuid
 statement - []
 */
 
-app.get('/statement/:ssn', (request, response) => {
-  const { ssn } = request.params
+// Middleware
+function verifyIfAccountExistsSSN(request, response, next) {
+  const { ssn } = request.headers;
 
-  const customer = customers.find(customer => customer.ssn === ssn)
+  const customer = customers.find(customer => customer.ssn === ssn);
 
-  return response.json(customer.statement)
+  if (!customer) {
+    return response.status(400).json({ error: 'Customer not found' });
+  }
 
+  request.customer = customer;
+
+  return next();
+}
+
+function getBalance(statement) {
+  statement.reduce((acc, operation) => {});
+}
+
+// app.use(verifyIfAccountExistsSSN);
+// only use this declaration if all the routes below are going to use this middleware
+
+app.get('/statement', verifyIfAccountExistsSSN, (request, response) => {
+  const { customer } = request;
+  return response.json(customer.statement);
+});
+
+app.post('/deposit', verifyIfAccountExistsSSN, (request, response) => {
+  const { description, amount } = request.body;
+
+  const { customer } = request;
+
+  const statementOperation = {
+    description,
+    amount,
+    created_at: new Date(),
+    type: 'credit',
+  };
+
+  customer.statement.push(statementOperation);
+
+  return response.status(201).send();
+});
+
+app.post('/withdraw', verifyIfAccountExistsSSN, (request, response) => {
+  const { amount } = request.body;
+
+  const { customer } = request;
+
+  const statementOperation = {
+    description,
+    amount,
+    created_at: new Date(),
+    type: 'debit',
+  };
+
+  customer.statement.push(statementOperation);
+
+  return response.status(201).send();
 });
 
 app.post('/account', (request, response) => {
