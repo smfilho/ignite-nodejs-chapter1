@@ -30,7 +30,7 @@ function verifyIfAccountExistsSSN(request, response, next) {
 }
 
 function getBalance(statement) {
-  statement.reduce((acc, operation) => {
+  const balance = statement.reduce((acc, operation) => {
     if (operation.type === 'credit') {
       return acc + operation.amount;
     } else {
@@ -67,7 +67,7 @@ app.post('/deposit', verifyIfAccountExistsSSN, (request, response) => {
 });
 
 app.post('/withdraw', verifyIfAccountExistsSSN, (request, response) => {
-  const { amount } = request.body;
+  const { description, amount } = request.body;
 
   const { customer } = request;
 
@@ -78,6 +78,7 @@ app.post('/withdraw', verifyIfAccountExistsSSN, (request, response) => {
   }
 
   const statementOperation = {
+    description,
     amount,
     created_at: new Date(),
     type: 'debit',
