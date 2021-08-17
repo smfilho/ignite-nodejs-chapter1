@@ -30,7 +30,15 @@ function verifyIfAccountExistsSSN(request, response, next) {
 }
 
 function getBalance(statement) {
-  statement.reduce((acc, operation) => {});
+  statement.reduce((acc, operation) => {
+    if (operation.type === 'credit') {
+      return acc + operation.amount;
+    } else {
+      return acc - operation.amount;
+    }
+  }, 0);
+
+  return balance;
 }
 
 // app.use(verifyIfAccountExistsSSN);
@@ -63,15 +71,19 @@ app.post('/withdraw', verifyIfAccountExistsSSN, (request, response) => {
 
   const { customer } = request;
 
+  const balance = getBalance(customer.statement);
+
+  if (balance < amount) {
+    return response.status(400).json({ error: 'Insuficient funds' });
+  }
+
   const statementOperation = {
-    description,
     amount,
     created_at: new Date(),
     type: 'debit',
   };
 
   customer.statement.push(statementOperation);
-
   return response.status(201).send();
 });
 
