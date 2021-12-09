@@ -29,6 +29,9 @@ function verifyIfAccountExistsSSN(request, response, next) {
   return next();
 }
 
+// app.use(verifyIfAccountExistsSSN);
+// only use this declaration if all the routes below are going to use this middleware
+
 function getBalance(statement) {
   const balance = statement.reduce((acc, operation) => {
     if (operation.type === 'credit') {
@@ -41,12 +44,21 @@ function getBalance(statement) {
   return balance;
 }
 
-// app.use(verifyIfAccountExistsSSN);
-// only use this declaration if all the routes below are going to use this middleware
-
 app.get('/statement', verifyIfAccountExistsSSN, (request, response) => {
   const { customer } = request;
   return response.json(customer.statement);
+});
+
+app.get('/statement/date', verifyIfAccountExistsSSN, (request, response) => {
+  const { customer } = request;
+  return response.json(customer.statement.created_at);
+});
+
+app.get('/balance', verifyIfAccountExistsSSN, (request, response) => {
+  const { customer } = request;
+  const balance = getBalance(customer.statement);
+  console.log(balance)
+  return response.json(balance);
 });
 
 app.post('/deposit', verifyIfAccountExistsSSN, (request, response) => {
@@ -110,19 +122,5 @@ app.post('/account', (request, response) => {
 
   return response.status(201).send();
 });
-
-// app.put('/courses/:id', (request, response) => {
-//   const { id } = request.params;
-//   console.log(id);
-//   return response.json(['Class999', 'Class2', 'Class3', 'Class4']);
-// });
-
-// app.patch('/courses/:id', (request, response) => {
-//   return response.json(['Class999', 'Class888', 'Class3', 'Class4']);
-// });
-
-// app.delete('/courses/:id', (request, response) => {
-//   return response.json(['Class999', 'Class888', 'Class4']);
-// });
 
 app.listen(3333);
