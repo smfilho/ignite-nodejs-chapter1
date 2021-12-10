@@ -1,3 +1,4 @@
+const { request, response } = require('express');
 const express = require('express');
 const { v4: uuidv4 } = require('uuid');
 
@@ -126,15 +127,31 @@ app.post('/account', (request, response) => {
     statement: [],
   });
 
+  return response.status(201).send();
+});
+
 app.put('/account', verifyIfAccountExistsSSN, (request, response) => {
   const { name } = request.body;
   const { customer } = request;
 
   customer.name = name;
-  return response.status(201).send();
-  })
 
   return response.status(201).send();
-});
+})
+
+app.get('/account', verifyIfAccountExistsSSN, (request, response) => {
+  const { customer } = request;
+
+  return response.json(customer)
+})
+
+app.delete('/account', verifyIfAccountExistsSSN, (request, response) => {
+  const { customer } = request;
+
+  //using splice
+  customers.splice(customer, 1)
+
+  return response.status(200).json(customers)
+})
 
 app.listen(3333);
